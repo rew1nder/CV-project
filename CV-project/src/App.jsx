@@ -55,112 +55,112 @@ const App = () => {
     {
       title: "Lord Of Chaos",
       artist: "Ken Carson",
-      audioUrl: "src/Songs/1 Lord Of Chaos - Ken Carson.mp3",
+      audioUrl: "/Songs/1 Lord Of Chaos - Ken Carson.mp3",
     },
     {
       title: "Xposed",
       artist: "Ken Carson",
-      audioUrl: "src/Songs/2 Xposed - Ken Carson.mp3",
+      audioUrl: "/Songs/2 Xposed - Ken Carson.mp3",
     },
     {
       title: "Money Spread",
       artist: "Ken Carson",
-      audioUrl: "src/Songs/3 Money Spread - Ken Carson.mp3",
+      audioUrl: "/Songs/3 Money Spread - Ken Carson.mp3",
     },
     {
       title: "Root Of All Evil",
       artist: "Ken Carson",
-      audioUrl: "src/Songs/4 Root Of All Evil - Ken Carson.mp3",
+      audioUrl: "/Songs/4 Root Of All Evil - Ken Carson.mp3",
     },
     {
       title: "K-Hole",
       artist: "Ken Carson",
-      audioUrl: "src/Songs/5 K-Hole - Ken Carson.mp3",
+      audioUrl: "/Songs/5 K-Hole - Ken Carson.mp3",
     },
     {
       title: "Trap Jump",
       artist: "Ken Carson",
-      audioUrl: "src/Songs/6 Trap Jump - Ken Carson.mp3",
+      audioUrl: "/Songs/6 Trap Jump - Ken Carson.mp3",
     },
     {
       title: "Blakk Rokkstar",
       artist: "Ken Carson",
-      audioUrl: "src/Songs/7 Blakk Rokkstar - Ken Carson.mp3",
+      audioUrl: "/Songs/7 Blakk Rokkstar - Ken Carson.mp3",
     },
     {
       title: "LiveLeak",
       artist: "Ken Carson",
-      audioUrl: "src/Songs/8 LiveLeak - Ken Carson.mp3",
+      audioUrl: "/Songs/8 LiveLeak - Ken Carson.mp3",
     },
     {
       title: "Diamonds",
       artist: "Ken Carson",
-      audioUrl: "src/Songs/9 Diamonds - Ken Carson.mp3",
+      audioUrl: "/Songs/9 Diamonds - Ken Carson.mp3",
     },
     {
       title: "Dismantled",
       artist: "Ken Carson",
-      audioUrl: "src/Songs/10 Dismantled - Ken Carson.mp3",
+      audioUrl: "/Songs/10 Dismantled - Ken Carson.mp3",
     },
     {
       title: "200 Kash",
       artist: "Ken Carson",
-      audioUrl: "src/Songs/11 200 Kash - Ken Carson.mp3",
+      audioUrl: "/Songs/11 200 Kash - Ken Carson.mp3",
     },
     {
       title: "Down2Earth",
       artist: "Ken Carson",
-      audioUrl: "src/Songs/12 Down2Earth - Ken Carson.mp3",
+      audioUrl: "/Songs/12 Down2Earth - Ken Carson.mp3",
     },
     {
       title: "Confetti",
       artist: "Ken Carson",
-      audioUrl: "src/Songs/13 Confetti - Ken Carson.mp3",
+      audioUrl: "/Songs/13 Confetti - Ken Carson.mp3",
     },
     {
       title: "Naked",
       artist: "Ken Carson",
-      audioUrl: "src/Songs/14 Naked - Ken Carson.mp3",
+      audioUrl: "/Songs/14 Naked - Ken Carson.mp3",
     },
     {
       title: "Kryptonite",
       artist: "Ken Carson",
-      audioUrl: "src/Songs/15 Kryptonite - Ken Carson.mp3",
+      audioUrl: "/Songs/15 Kryptonite - Ken Carson.mp3",
     },
     {
       title: "Psycho",
       artist: "Ken Carson",
-      audioUrl: "src/Songs/16 Psycho - Ken Carson.mp3",
+      audioUrl: "/Songs/16 Psycho - Ken Carson.mp3",
     },
     {
       title: "Inferno",
       artist: "Ken Carson",
-      audioUrl: "src/Songs/17 Inferno - Ken Carson.mp3",
+      audioUrl: "/Songs/17 Inferno - Ken Carson.mp3",
     },
     {
       title: "Thx",
       artist: "Ken Carson",
-      audioUrl: "src/Songs/18 Thx - Ken Carson.mp3",
+      audioUrl: "/Songs/18 Thx - Ken Carson.mp3",
     },
     {
       title: "2000",
       artist: "Ken Carson",
-      audioUrl: "src/Songs/19 2000 - Ken Carson.mp3",
+      audioUrl: "/Songs/19 2000 - Ken Carson.mp3",
     },
     {
       title: "Evolution",
       artist: "Ken Carson",
-      audioUrl: "src/Songs/20 Evolution - Ken Carson.mp3",
+      audioUrl: "/Songs/20 Evolution - Ken Carson.mp3",
     },
     {
       title: "Ghoul",
       artist: "Ken Carson",
-      audioUrl: "src/Songs/21 Ghoul - Ken Carson.mp3",
+      audioUrl: "/Songs/21 Ghoul - Ken Carson.mp3",
     },
     {
       title: "Off The Meter",
       artist: "Ken Carson",
-      audioUrl: "src/Songs/22 Ken Carson - Off The Meter.mp3",
+      audioUrl: "/Songs/22 Ken Carson - Off The Meter.mp3",
     },
   ];
 
@@ -460,7 +460,7 @@ const App = () => {
           <div className="music-block fade-in">
             <div className="album-info">
               <img
-                src="src/Songs/cover.gif"
+                src="/Songs/cover.gif"
                 alt="Album Cover"
                 className="album-cover"
               />
