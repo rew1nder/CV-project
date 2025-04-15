@@ -1,0 +1,450 @@
+.music-block {
+  background-color: rgba(8, 8, 8, 0.8);
+  margin: 40px auto;
+  padding: 25px;
+  border: 1px solid rgb(39, 39, 39);
+  border-radius: 15px;
+  font-family: "Courier New", Courier, monospace;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 500px;
+  max-height: 550px;
+  min-width: 420px;
+  max-width: 460px;
+  position: relative;
+  opacity: 0.9;
+}
+
+.album-info {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 15px;
+  margin-bottom: 5px; /* Зменшено відступ */
+}
+
+.album-cover {
+  width: 85px;
+  height: 85px;
+  border-radius: 10px;
+}
+
+.album-meta {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.album-title,
+.album-artist {
+  color: white;
+  font-size: 1.3rem;
+  margin: 0;
+  text-align: left;
+  font-weight: bold;
+}
+
+.album-artist {
+  font-size: 1.1rem; /* Розмір шрифту для виконавця */
+  color: rgba(255, 255, 255, 0.9); /* Напівпрозорий білий */
+  margin: 5px 0 2px; /* Відступ зверху 5px, знизу 2px */
+}
+
+.release-date {
+  font-size: 0.85rem; /* Розмір шрифту для дати релізу */
+  color: rgba(255, 255, 255, 0.6); /* Напівпрозорий білий */
+  font-style: italic; /* Курсив */
+  margin: 0; /* Забираємо всі зовнішні відступи */
+}
+
+.tracks {
+  flex-grow: 1;
+  overflow-y: auto;
+  max-height: calc(100% - 150px);
+  padding-right: 5px;
+  margin-bottom: 10px;
+}
+
+.tracks::-webkit-scrollbar {
+  width: 6px;
+}
+.tracks::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+}
+
+.track {
+  color: white;
+  cursor: pointer;
+  padding: 5px 0;
+  font-size: 1rem;
+  transition: color 0.3s, background-color 0.3s;
+}
+
+.track:hover {
+  color: #ff6b6b;
+}
+
+.track.active {
+  color: #ff6b6b;
+  font-weight: bold;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 5px;
+}
+
+.music-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-top: auto;
+}
+
+.track-controls {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.track-controls svg {
+  font-size: 1.6rem;
+  color: white;
+  cursor: pointer;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.track-controls svg:hover {
+  color: #ff6b6b;
+  transform: scale(1.1);
+}
+
+.track-controls svg:active {
+  transform: scale(0.95);
+}
+
+.play-button {
+  font-size: 1.6rem;
+  color: white;
+  cursor: pointer;
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.play-button:hover {
+  color: #ff6b6b;
+  transform: scale(1.1);
+}
+
+.play-button:active {
+  transform: scale(0.95);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.audio-controls {
+  display: flex;
+  gap: 25px;
+  justify-content: center;
+  align-items: center;
+}
+
+/* === Volume & Speed Controls  === */
+.volume-control,
+.speed-control {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-left: 20px;
+  font-size: 14px;
+  color: #fff;
+}
+
+.volume-control label,
+.speed-control label {
+  margin-bottom: 5px;
+  font-weight: bold;
+  font-size: 13px;
+}
+
+.volume-control input[type="range"],
+.speed-control input[type="range"] {
+  width: 150px;
+  appearance: none;
+  height: 6px;
+  background: #444;
+  border-radius: 4px;
+  outline: none;
+  transition: background 0.2s;
+  margin-bottom: 5px;
+}
+
+/* Thumb для volume - рожевий */
+.volume-control input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #ff6b6b;
+  cursor: pointer;
+  transition: background 0.3s ease-in-out;
+}
+
+.volume-control input[type="range"]::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #ff6b6b;
+  cursor: pointer;
+}
+
+/* Thumb для speed - бірюзовий */
+.speed-control input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #00f7ff;
+  cursor: pointer;
+  transition: background 0.3s ease-in-out;
+}
+
+.speed-control input[type="range"]::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #00f7ff;
+  cursor: pointer;
+}
+
+.volume-value,
+.speed-value {
+  font-size: 12px;
+  color: #aaa;
+}
+
+.floating-value {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 4px 10px;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  font-size: 14px;
+  border-radius: 6px;
+  animation: fadeOut 1s ease forwards;
+}
+
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Забороняє виділення тексту */
+.no-select {
+  user-select: none;
+}
+
+.progress-container {
+  display: flex;
+  align-items: center;
+  gap: 20px; /* Відступ між часом і прогрес-баром */
+  margin-top: 10px;
+  width: 100%; /* Прогрес-бар займає всю ширину контейнера */
+}
+
+.current-time,
+.total-time {
+  font-size: 14px;
+  color: #fff;
+  min-width: 50px; /* Мінімальна ширина для часу */
+  text-align: center;
+}
+
+.progress-bar-wrapper {
+  position: relative;
+  flex: 1; /* Прогрес-бар займає всю доступну ширину */
+  height: 8px; /* Висота прогрес-бару */
+  background: #444; /* Сірий фон для прогрес-бару */
+  border-radius: 4px; /* Заокруглення для всього прогрес-бару */
+  overflow: visible; /* Приховує вихід за межі */
+}
+
+.progress-bar-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background-color: white; /* Білий колір для заповнення */
+  width: 0%; /* Початкове значення ширини */
+  border-radius: 4px; /* Зберігаємо заокруглення на початку і в кінці */
+  transition: width 0.1s linear; /* Плавне оновлення ширини */
+  z-index: 1; /* Заповнення під повзунком */
+}
+
+.progress-bar {
+  position: relative;
+  width: 100%;
+  height: 8px; /* Висота прогрес-бару */
+  background: transparent; /* Прозорий фон, щоб не перекривати заповнення */
+  appearance: none;
+  outline: none;
+  z-index: 2; /* Повзунок поверх заповнення */
+  cursor: pointer;
+}
+
+.progress-bar::-webkit-slider-thumb {
+  appearance: none;
+  width: 16px; /* Розмір повзунка */
+  height: 16px;
+  border-radius: 50%;
+  background: #ff6b6b;
+  cursor: pointer;
+  position: relative;
+  z-index: 3; /* Повзунок поверх усіх елементів */
+  top: -4px; /* Вирівнюємо повзунок по центру прогрес-бару */
+}
+
+.progress-bar::-moz-range-thumb {
+  width: 16px; /* Розмір повзунка */
+  height: 16px;
+  border-radius: 50%;
+  background: #ff6b6b;
+  cursor: pointer;
+  position: relative;
+  z-index: 3; /* Повзунок поверх усіх елементів */
+  top: -4px; /* Вирівнюємо повзунок по центру прогрес-бару */
+}
+
+.shuffle-button,
+.repeat-button {
+  font-size: 1.6rem; /* Розмір шрифту, як у інших кнопок */
+  color: white; /* Колір тексту */
+  cursor: pointer; /* Вказівник миші */
+  transition: transform 0.2s ease, color 0.2s ease; /* Анімація при наведенні */
+  background: none; /* Без фону */
+  border: none; /* Без рамки */
+  position: relative; /* Встановлюємо відносне позиціонування */
+}
+
+.shuffle-button:hover,
+.repeat-button:hover {
+  color: #ff6b6b; /* Колір при наведенні */
+  transform: scale(1.1); /* Збільшення при наведенні */
+}
+
+.music-controls .track-controls .shuffle-button.active::after,
+.music-controls .track-controls .repeat-button.active::after {
+  content: ""; /* Додаємо порожній елемент */
+  position: absolute; /* Абсолютне позиціонування */
+  bottom: -4px; /* Розміщуємо лінію під кнопкою */
+  left: 50%; /* Вирівнюємо по центру */
+  transform: translateX(-50%); /* Центруємо лінію */
+  width: 50%; /* Зменшуємо ширину лінії до 50% від ширини кнопки */
+  height: 2px; /* Висота лінії */
+  background-color: #ff6b6b; /* Червоний колір лінії */
+  border-radius: 2px; /* Закруглені краї */
+}
+@media (max-width: 600px) {
+  .music-block {
+    min-width: 90%;
+    max-width: 95%;
+    min-height: 450px;
+    max-height: none;
+    padding: 20px;
+  }
+
+  .album-info {
+    display: flex;
+    flex-direction: row; /* Розташовуємо елементи горизонтально */
+    align-items: flex-start; /* Вирівнюємо елементи по верхньому краю */
+    text-align: left; /* Вирівнюємо текст по лівому краю */
+    gap: 15px; /* Відступи між обкладинкою та текстом */
+    margin-bottom: 20px; /* Відступ знизу */
+  }
+
+  .album-cover {
+    width: 80px; /* Розмір обкладинки */
+    height: 80px;
+    border-radius: 10px; /* Закруглені краї */
+  }
+
+  .album-title {
+    font-size: 1.3rem; /* Розмір шрифту для назви альбому */
+    font-weight: bold; /* Жирний текст */
+    color: white; /* Білий колір тексту */
+    margin: 0; /* Забираємо зовнішні відступи */
+  }
+
+  .album-artist {
+    font-size: 1.1rem; /* Розмір шрифту для виконавця */
+    color: rgba(255, 255, 255, 0.9); /* Напівпрозорий білий */
+    margin: 5px 0 2px; /* Відступ зверху 5px, знизу 2px */
+  }
+
+  .release-date {
+    font-size: 0.85rem; /* Розмір шрифту для дати релізу */
+    color: rgba(255, 255, 255, 0.6); /* Напівпрозорий білий */
+    font-style: italic; /* Курсив */
+    margin: 0; /* Забираємо всі зовнішні відступи */
+  }
+
+  .tracks {
+    max-height: 250px;
+    margin-bottom: 15px;
+  }
+
+  .audio-controls {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .volume-control,
+  .speed-control {
+    margin-left: 0;
+    align-items: center;
+  }
+
+  .volume-control input[type="range"],
+  .speed-control input[type="range"] {
+    width: 180px; /* Збільшуємо ширину лінії */
+  }
+
+  /* Видаляємо зміни стилю для таймлайну */
+  .progress-container {
+    flex-direction: row; /* Залишаємо горизонтальне розташування */
+    align-items: center; /* Вирівнюємо по центру */
+    gap: 20px; /* Відступ між часом і прогрес-баром */
+  }
+
+  .current-time,
+  .total-time {
+    min-width: 50px; /* Мінімальна ширина для часу */
+    font-size: 14px; /* Залишаємо стандартний розмір шрифту */
+  }
+
+  .progress-bar-wrapper {
+    width: 100%; /* Прогрес-бар займає всю ширину контейнера */
+  }
+
+  .track-controls {
+    flex-wrap: wrap;
+    gap: 15px;
+  }
+}
