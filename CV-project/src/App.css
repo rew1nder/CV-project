@@ -287,44 +287,50 @@ body {
   .code-block {
     width: 90%;
     min-width: unset;
-    min-height: 230px; /* Залишаємо висоту */
-    max-height: 230px; /* Залишаємо висоту */
+    min-height: 230px; /* Висота для код-блоку */
+    max-height: 230px; /* Висота для код-блоку */
     font-size: 12px; /* Зменшений шрифт */
     line-height: 1.4; /* Зменшена висота рядка */
     text-align: left; /* Вирівнюємо текст по лівому краю */
+    word-wrap: break-word; /* Переносимо довгі слова */
+    overflow: hidden; /* Прибираємо прокрутку */
   }
+
   .text-block {
     width: 90%;
     min-width: unset;
-    min-height: 230px; /* Залишаємо висоту */
-    max-height: 230px; /* Залишаємо висоту */
+    min-height: 230px; /* Висота для текст-блоку */
+    max-height: 230px; /* Висота для текст-блоку */
     font-size: 12px; /* Зменшений шрифт */
     line-height: 1.4; /* Зменшена висота рядка */
     text-align: center; /* Вирівнюємо текст по центру */
+    word-wrap: break-word; /* Переносимо довгі слова */
+    overflow: hidden; /* Прибираємо прокрутку */
   }
 
   .toggle-button {
-    position: fixed; /* Фіксуємо кнопку */
-    bottom: 50px; /* Відступ від нижнього краю */
-    left: 50%; /* Центруємо по горизонталі */
-    margin: 20px auto 0; /* Вирівнюємо по центру */
-    z-index: 9999; /* Забезпечуємо, що кнопка буде поверх інших елементів */
+    left: calc(50% + 40px); /* Центруємо по горизонталі */
   }
 
   .content {
     flex-direction: column;
     align-items: center;
     gap: 20px;
-    padding-bottom: 100px; /* Додаємо більше відступу знизу */
+    padding-bottom: 60px; /* Додаємо відступ знизу, щоб кнопка не перекривала блоки */
   }
+
   .icons {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 6px;
     justify-items: center;
   }
-}
 
+  .icons img {
+    width: 30px; /* Зменшений розмір ширини */
+    height: 30px; /* Зменшений розмір висоти */
+  }
+}
 /* Анімації */
 .rotate-react {
   animation: rotate 10s linear infinite;

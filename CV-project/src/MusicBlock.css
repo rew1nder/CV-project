@@ -361,11 +361,11 @@
   background-color: #ff6b6b; /* Червоний колір лінії */
   border-radius: 2px; /* Закруглені краї */
 }
-@media (max-width: 600px) {
+@media (max-width: 768px) {
   .music-block {
     min-width: 90%;
     max-width: 95%;
-    min-height: 450px;
+    min-height: 350px; /* Зменшив висоту блоку */
     max-height: none;
     padding: 20px;
   }
