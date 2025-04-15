@@ -308,15 +308,19 @@ body {
     overflow: hidden; /* Прибираємо прокрутку */
   }
 
+  /* .toggle-button {
+    left: calc(50% + 40px); /* Центруємо по горизонталі *
+  } */
   .toggle-button {
-    left: calc(50% + 40px); /* Центруємо по горизонталі */
+    /* position: static; Переміщуємо кнопку в потік документа */
+    margin: 20px auto 0; /* Центруємо кнопку під блоками */
+    /* display: block; Забезпечуємо вирівнювання */
   }
-
   .content {
     flex-direction: column;
     align-items: center;
     gap: 20px;
-    padding-bottom: 60px; /* Додаємо відступ знизу, щоб кнопка не перекривала блоки */
+    padding-bottom: 100px; /* Додаємо відступ знизу, щоб кнопка не перекривала блоки */
   }
 
   .icons {

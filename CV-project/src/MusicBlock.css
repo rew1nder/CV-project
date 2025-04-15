@@ -366,7 +366,7 @@
     min-width: 90%;
     max-width: 95%;
     min-height: 350px; /* Зменшив висоту блоку */
-    max-height: none;
+    max-height: 500px;
     padding: 20px;
   }
 
