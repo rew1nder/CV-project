@@ -44,12 +44,21 @@ const App = () => {
   const [volume, setVolume] = useState(1);
   const [speed, setSpeed] = useState(1);
   const [playing, setPlaying] = useState(false);
-  const audioRef = useRef(new Audio());
+  const [progress, setProgress] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [isShuffle, setIsShuffle] = useState(false);
+  const [isRepeat, setIsRepeat] = useState(false);
+
+  const audioContextRef = useRef(null);
+  const sourceNodeRef = useRef(null);
+  const gainNodeRef = useRef(null);
   const trackRefs = useRef([]);
-  const [progress, setProgress] = useState(0); // Поточний час треку
-  const [duration, setDuration] = useState(0); // Загальний час треку
-  const [isShuffle, setIsShuffle] = useState(false); // Стан для шафлу
-  const [isRepeat, setIsRepeat] = useState(false); // Стан для повтору
+  const audioBuffersRef = useRef({});
+  const startTimeRef = useRef(0);
+  const pauseTimeRef = useRef(0);
+  const animationFrameRef = useRef(null);
+  const speedChangeTimeoutRef = useRef(null);
+  const lastUpdateRef = useRef(0);
 
   const tracks = [
     {
@@ -164,38 +173,286 @@ const App = () => {
     },
   ];
 
+  // Initialize AudioContext and preload all tracks
   useEffect(() => {
-    audioRef.current.src = tracks[currentTrack].audioUrl;
-    audioRef.current.volume = volume;
-    audioRef.current.playbackRate = speed;
-    if (playing) audioRef.current.play();
-    audioRef.current.onloadedmetadata = () => {
-      setDuration(audioRef.current.duration); // Встановлюємо тривалість треку
-    };
-  }, [currentTrack]);
-  useEffect(() => {
-    const updateProgress = () => {
-      if (audioRef.current) {
-        setProgress(audioRef.current.currentTime); // Оновлюємо поточний час треку
-        setDuration(audioRef.current.duration); // Оновлюємо загальну тривалість треку
-      }
-    };
+    audioContextRef.current = new (window.AudioContext ||
+      window.webkitAudioContext)();
+    gainNodeRef.current = audioContextRef.current.createGain();
+    gainNodeRef.current.connect(audioContextRef.current.destination);
 
-    if (audioRef.current) {
-      audioRef.current.addEventListener("timeupdate", updateProgress);
-    }
+    // Preload all tracks
+    const preloadTracks = async () => {
+      console.log("Starting preload of all tracks...");
+      const startTime = performance.now();
+      for (let i = 0; i < tracks.length; i++) {
+        if (!audioBuffersRef.current[i]) {
+          await loadTrack(i);
+        }
+      }
+      const endTime = performance.now();
+      console.log(`All tracks preloaded in ${endTime - startTime} ms`);
+    };
+    preloadTracks();
 
     return () => {
-      if (audioRef.current) {
-        audioRef.current.removeEventListener("timeupdate", updateProgress);
+      if (audioContextRef.current) {
+        audioContextRef.current.close();
+      }
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+      if (speedChangeTimeoutRef.current) {
+        clearTimeout(speedChangeTimeoutRef.current);
       }
     };
   }, []);
-  useEffect(() => {
-    audioRef.current.volume = volume;
-    audioRef.current.playbackRate = speed;
-  }, [volume, speed]);
 
+  // Update duration when currentTrack changes
+  useEffect(() => {
+    if (audioBuffersRef.current[currentTrack]) {
+      setDuration(audioBuffersRef.current[currentTrack].duration);
+      console.log(
+        "Duration set for current track:",
+        audioBuffersRef.current[currentTrack].duration
+      );
+    }
+  }, [currentTrack]);
+
+  // Update volume
+  useEffect(() => {
+    if (gainNodeRef.current) {
+      gainNodeRef.current.gain.setValueAtTime(
+        volume,
+        audioContextRef.current.currentTime
+      );
+    }
+  }, [volume]);
+
+  // Restore playback when switching to music block
+  useEffect(() => {
+    if (showMusicBlock && playing) {
+      createSourceNode(pauseTimeRef.current);
+    }
+    return () => {
+      cancelAnimationFrame(animationFrameRef.current);
+    };
+  }, [showMusicBlock]);
+
+  // Update progress using requestAnimationFrame
+  const updateProgress = () => {
+    if (!playing || !audioContextRef.current || !sourceNodeRef.current) {
+      cancelAnimationFrame(animationFrameRef.current);
+      console.log("Progress update stopped:", {
+        playing,
+        audioContext: !!audioContextRef.current,
+        sourceNode: !!sourceNodeRef.current,
+      });
+      return;
+    }
+    const currentTime =
+      (audioContextRef.current.currentTime - startTimeRef.current) * speed;
+    const clampedTime = Math.max(0, Math.min(currentTime, duration || 0));
+    const now = performance.now();
+    if (now - lastUpdateRef.current >= 50) {
+      setProgress(clampedTime);
+      lastUpdateRef.current = now;
+      console.log("Progress updated:", {
+        currentTime,
+        clampedTime,
+        duration,
+        delta: currentTime - clampedTime,
+      });
+    }
+    if (clampedTime < (duration || Infinity)) {
+      animationFrameRef.current = requestAnimationFrame(updateProgress);
+    } else {
+      setProgress(duration || 0);
+      cancelAnimationFrame(animationFrameRef.current);
+      setPlaying(false);
+    }
+  };
+
+  // Create and configure audio source node
+  const createSourceNode = (startTime = 0) => {
+    if (!audioBuffersRef.current[currentTrack] || !audioContextRef.current) {
+      console.log("Cannot create source node:", {
+        buffer: !!audioBuffersRef.current[currentTrack],
+        audioContext: !!audioContextRef.current,
+      });
+      return;
+    }
+
+    if (sourceNodeRef.current) {
+      sourceNodeRef.current.stop();
+      sourceNodeRef.current.disconnect();
+      sourceNodeRef.current = null;
+    }
+
+    sourceNodeRef.current = audioContextRef.current.createBufferSource();
+    sourceNodeRef.current.buffer = audioBuffersRef.current[currentTrack];
+    sourceNodeRef.current.playbackRate.setValueAtTime(
+      speed,
+      audioContextRef.current.currentTime
+    );
+    sourceNodeRef.current.connect(gainNodeRef.current);
+    sourceNodeRef.current.start(0, startTime / speed);
+    startTimeRef.current =
+      audioContextRef.current.currentTime - startTime / speed;
+
+    sourceNodeRef.current.onended = () => {
+      if (!playing) return;
+      if (
+        audioContextRef.current.currentTime - startTimeRef.current <
+        duration / speed
+      )
+        return;
+      if (isRepeat) {
+        createSourceNode(0);
+        setPlaying(true);
+      } else {
+        changeTrack(currentTrack + 1);
+      }
+    };
+
+    cancelAnimationFrame(animationFrameRef.current);
+    lastUpdateRef.current = 0;
+    animationFrameRef.current = requestAnimationFrame(updateProgress);
+  };
+
+  // Handle track change
+  useEffect(() => {
+    const loadAndPlay = async () => {
+      if (!audioBuffersRef.current[currentTrack]) {
+        console.log(`Track ${currentTrack} not in cache, loading...`);
+        await loadTrack(currentTrack);
+      }
+      setProgress(0);
+      pauseTimeRef.current = 0;
+      if (playing) {
+        createSourceNode();
+      }
+    };
+    loadAndPlay();
+  }, [currentTrack]);
+
+  // Load track function
+  const loadTrack = async (trackIndex) => {
+    const startTime = performance.now();
+    if (audioBuffersRef.current[trackIndex]) {
+      console.log(
+        `Track ${trackIndex} already in cache, duration:`,
+        audioBuffersRef.current[trackIndex].duration
+      );
+      return;
+    }
+    try {
+      const response = await fetch(tracks[trackIndex].audioUrl);
+      if (!response.ok)
+        throw new Error(`Failed to load ${tracks[trackIndex].audioUrl}`);
+      const arrayBuffer = await response.arrayBuffer();
+      const audioBuffer = await audioContextRef.current.decodeAudioData(
+        arrayBuffer
+      );
+      audioBuffersRef.current[trackIndex] = audioBuffer;
+      if (trackIndex === currentTrack) {
+        setDuration(audioBuffer.duration);
+      }
+      const endTime = performance.now();
+      console.log(
+        `Track ${trackIndex} loaded in ${endTime - startTime} ms, duration:`,
+        audioBuffer.duration
+      );
+    } catch (err) {
+      console.error(`Error loading track ${trackIndex}:`, err);
+    }
+  };
+
+  // Handle play/pause
+  const togglePlay = () => {
+    if (!audioBuffersRef.current[currentTrack]) return;
+
+    if (!playing) {
+      if (audioContextRef.current.state === "suspended") {
+        audioContextRef.current.resume();
+      }
+      createSourceNode(pauseTimeRef.current);
+    } else {
+      pauseTimeRef.current =
+        (audioContextRef.current.currentTime - startTimeRef.current) * speed;
+      if (sourceNodeRef.current) {
+        sourceNodeRef.current.stop();
+        sourceNodeRef.current.disconnect();
+        sourceNodeRef.current = null;
+      }
+      cancelAnimationFrame(animationFrameRef.current);
+    }
+    setPlaying(!playing);
+  };
+
+  // Handle seeking
+  const handleSeek = (e) => {
+    const newTime = parseFloat(e.target.value);
+    setProgress(newTime);
+    pauseTimeRef.current = newTime;
+    if (playing) {
+      createSourceNode(newTime);
+    }
+  };
+
+  // Handle speed adjustment with debounce
+  const adjustSpeed = (e) => {
+    const newSpeed = parseFloat(e.target.value);
+    setSpeed(newSpeed);
+    if (playing && sourceNodeRef.current) {
+      if (speedChangeTimeoutRef.current) {
+        clearTimeout(speedChangeTimeoutRef.current);
+      }
+      speedChangeTimeoutRef.current = setTimeout(() => {
+        const currentTime =
+          (audioContextRef.current.currentTime - startTimeRef.current) * speed;
+        pauseTimeRef.current = currentTime;
+        createSourceNode(currentTime);
+      }, 100);
+    }
+  };
+
+  // Track navigation
+  const changeTrack = (index) => {
+    setIsRepeat(false);
+    let newIndex = index;
+
+    if (isShuffle) {
+      newIndex = Math.floor(Math.random() * tracks.length);
+    } else {
+      if (index < 0) {
+        newIndex = tracks.length - 1;
+      } else if (index >= tracks.length) {
+        newIndex = 0;
+      }
+    }
+
+    setCurrentTrack(newIndex);
+    setProgress(0);
+    pauseTimeRef.current = 0;
+    if (!playing) setPlaying(true);
+  };
+
+  // Shuffle and repeat toggles
+  const toggleShuffle = () => {
+    setIsShuffle((prev) => !prev);
+  };
+
+  const toggleRepeat = () => {
+    setIsRepeat((prev) => !prev);
+  };
+
+  // Volume adjustment
+  const adjustVolume = (e) => {
+    const newVolume = parseFloat(e.target.value);
+    setVolume(newVolume);
+  };
+
+  // Scroll active track into view
   useEffect(() => {
     const activeTrack = trackRefs.current[currentTrack];
     if (activeTrack) {
@@ -207,6 +464,7 @@ const App = () => {
     }
   }, [currentTrack]);
 
+  // Code typing animation
   useEffect(() => {
     let currentLine = 0;
     let currentChar = 0;
@@ -270,94 +528,12 @@ const App = () => {
     if (lineIndex === 7) setIconsVisible(true);
   };
 
-  const togglePlay = () => {
-    if (playing) {
-      audioRef.current.pause();
-    } else {
-      audioRef.current
-        .play()
-        .catch((err) => console.error("Playback error:", err));
-    }
-    setPlaying(!playing);
-  };
-  const handleSeek = (e) => {
-    const newTime = parseFloat(e.target.value);
-    if (audioRef.current) {
-      audioRef.current.currentTime = newTime; // Оновлюємо час треку
-      setProgress(newTime); // Оновлюємо стан прогресу
-    }
-  };
-  const toggleShuffle = () => {
-    setIsShuffle((prev) => !prev); // Перемикаємо стан шафлу
-  };
-
-  const toggleRepeat = () => {
-    setIsRepeat((prev) => !prev); // Перемикаємо стан повтору
-  };
-  const changeTrack = (index) => {
-    setIsRepeat(false);
-
-    if (isShuffle) {
-      const randomIndex = Math.floor(Math.random() * tracks.length);
-      setCurrentTrack(randomIndex);
-    } else {
-      if (index < 0) {
-        setCurrentTrack(tracks.length - 1);
-      } else if (index >= tracks.length) {
-        setCurrentTrack(0);
-      } else {
-        setCurrentTrack(index);
-      }
-    }
-
-    audioRef.current.currentTime = 0;
-    audioRef.current.pause(); // Зупиняємо попередній трек
-    audioRef.current
-      .play()
-      .catch((err) => console.error("Playback error:", err)); // Відтворюємо новий трек
-    setPlaying(true);
-  };
-  useEffect(() => {
-    console.log("Shuffle button class:", isShuffle ? "active" : "inactive");
-    console.log("Repeat button class:", isRepeat ? "active" : "inactive");
-  }, [isShuffle, isRepeat]);
-  const adjustVolume = (e) => {
-    const newVolume = parseFloat(e.target.value);
-    setVolume(newVolume);
-    audioRef.current.volume = newVolume;
-  };
-  useEffect(() => {
-    audioRef.current.volume = volume;
-  }, [volume]);
-
-  // Додаємо обробник завершення треку
-  useEffect(() => {
-    const handleTrackEnd = () => {
-      if (isRepeat) {
-        audioRef.current.currentTime = 0;
-        audioRef.current.play();
-      } else {
-        changeTrack(currentTrack + 1);
-      }
-    };
-
-    const audio = audioRef.current;
-    audio.addEventListener("ended", handleTrackEnd);
-
-    return () => {
-      audio.removeEventListener("ended", handleTrackEnd);
-    };
-  }, [isRepeat, currentTrack, changeTrack]);
-  const adjustSpeed = (e) => {
-    const newSpeed = parseFloat(e.target.value);
-    setSpeed(newSpeed);
-    audioRef.current.playbackRate = newSpeed;
-  };
   const formatTime = (time) => {
     const minutes = Math.floor(time / 60);
     const seconds = Math.floor(time % 60);
     return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
   };
+
   return (
     <div className="container">
       <ParticlesComponent />
@@ -394,7 +570,7 @@ const App = () => {
               {iconsVisible && (
                 <div className="icons fade-in">
                   <a
-                    href="https://t.me/yourtelegramusername"
+                    href="https://t.me/wegonbeokay999"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
@@ -404,7 +580,7 @@ const App = () => {
                     />
                   </a>
                   <a
-                    href="https://www.instagram.com/yourinstagramusername/"
+                    href="https://www.instagram.com/rew1nderr?igsh=anFhbXo3ZzR4anVs&utm_source=qr"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
@@ -414,7 +590,7 @@ const App = () => {
                     />
                   </a>
                   <a
-                    href="https://github.com/yourgithubusername"
+                    href="https://github.com/rew1nder"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
@@ -424,7 +600,7 @@ const App = () => {
                     />
                   </a>
                   <a
-                    href="https://discord.com/users/yourdiscordusername"
+                    href="https://discord.com/users/401350525167206410"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
@@ -490,15 +666,30 @@ const App = () => {
                 <div className="progress-bar-wrapper">
                   <div
                     className="progress-bar-fill"
-                    style={{ width: `${(progress / duration) * 100}%` }}
+                    style={{
+                      width: duration
+                        ? `${(progress / duration) * 100}%`
+                        : "0%",
+                    }}
                   ></div>
                   <input
                     type="range"
                     className="progress-bar"
                     min="0"
                     max={duration || 0}
+                    step="0.1"
                     value={progress}
-                    onChange={(e) => handleSeek(e)}
+                    onChange={handleSeek}
+                    onMouseUp={() => {
+                      if (playing) {
+                        createSourceNode(pauseTimeRef.current);
+                      }
+                    }}
+                    onTouchEnd={() => {
+                      if (playing) {
+                        createSourceNode(pauseTimeRef.current);
+                      }
+                    }}
                   />
                 </div>
                 <span className="total-time">{formatTime(duration)}</span>
@@ -542,7 +733,7 @@ const App = () => {
                 </div>
                 <div className="speed-control">
                   <label htmlFor="speedRange" className="no-select">
-                    ⏩ Speed
+                    ⏩ Speed + Pitch
                   </label>
                   <input
                     id="speedRange"
