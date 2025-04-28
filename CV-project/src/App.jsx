@@ -310,7 +310,7 @@ const App = () => {
         createSourceNode(0);
         setPlaying(true);
       } else {
-        changeTrack(currentTrack + 1);
+        changeTrack(currentTrack + 1, false); // Автоматичний перехід
       }
     };
 
@@ -319,6 +319,29 @@ const App = () => {
     animationFrameRef.current = requestAnimationFrame(updateProgress);
   };
 
+  // Handle track change
+  const changeTrack = (index, isManualSelection = false) => {
+    if (isManualSelection) {
+      setIsShuffle(false); // Вимикаємо Shuffle при ручному виборі
+    }
+
+    let newIndex = index;
+
+    if (!isManualSelection && isShuffle) {
+      newIndex = Math.floor(Math.random() * tracks.length);
+    } else {
+      if (index < 0) {
+        newIndex = tracks.length - 1;
+      } else if (index >= tracks.length) {
+        newIndex = 0;
+      }
+    }
+
+    setCurrentTrack(newIndex);
+    setProgress(0);
+    pauseTimeRef.current = 0;
+    if (!playing) setPlaying(true);
+  };
   // Handle track change
   useEffect(() => {
     const loadAndPlay = async () => {
@@ -414,27 +437,6 @@ const App = () => {
         createSourceNode(currentTime);
       }, 100);
     }
-  };
-
-  // Track navigation
-  const changeTrack = (index) => {
-    setIsRepeat(false);
-    let newIndex = index;
-
-    if (isShuffle) {
-      newIndex = Math.floor(Math.random() * tracks.length);
-    } else {
-      if (index < 0) {
-        newIndex = tracks.length - 1;
-      } else if (index >= tracks.length) {
-        newIndex = 0;
-      }
-    }
-
-    setCurrentTrack(newIndex);
-    setProgress(0);
-    pauseTimeRef.current = 0;
-    if (!playing) setPlaying(true);
   };
 
   // Shuffle and repeat toggles
@@ -536,7 +538,7 @@ const App = () => {
 
   return (
     <div className="container">
-      <ParticlesComponent />
+      <ParticlesComponent id="tsparticles" />
       <div className="content">
         {!showMusicBlock && (
           <>
@@ -653,7 +655,7 @@ const App = () => {
                   key={index}
                   ref={(el) => (trackRefs.current[index] = el)}
                   className={`track ${index === currentTrack ? "active" : ""}`}
-                  onClick={() => changeTrack(index)}
+                  onClick={() => changeTrack(index, true)} // Передаємо true для ручного вибору
                 >
                   {track.title}
                 </div>
@@ -701,11 +703,15 @@ const App = () => {
                 >
                   <FaRandom />
                 </button>
-                <FaBackward onClick={() => changeTrack(currentTrack - 1)} />
+                <FaBackward
+                  onClick={() => changeTrack(currentTrack - 1, false)}
+                />
                 <div className="play-button" onClick={togglePlay}>
                   {playing ? <FaPause /> : <FaPlay />}
                 </div>
-                <FaForward onClick={() => changeTrack(currentTrack + 1)} />
+                <FaForward
+                  onClick={() => changeTrack(currentTrack + 1, false)}
+                />
                 <button
                   className={`repeat-button ${isRepeat ? "active" : ""}`}
                   onClick={toggleRepeat}
