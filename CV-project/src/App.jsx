@@ -62,42 +62,42 @@ const App = () => {
 
   const tracks = [
     {
-      title: "1 Lord Of Chaos",
+      title: "1  Lord Of Chaos",
       artist: "Ken Carson",
       audioUrl: "/Songs/1 Lord Of Chaos - Ken Carson.mp3",
     },
     {
-      title: "2 Xposed",
+      title: "2  Xposed",
       artist: "Ken Carson",
       audioUrl: "/Songs/2 Xposed - Ken Carson.mp3",
     },
     {
-      title: "3 Money Spread",
+      title: "3  Money Spread",
       artist: "Ken Carson",
       audioUrl: "/Songs/3 Money Spread - Ken Carson.mp3",
     },
     {
-      title: "4 Root Of All Evil",
+      title: "4  Root Of All Evil",
       artist: "Ken Carson",
       audioUrl: "/Songs/4 Root Of All Evil - Ken Carson.mp3",
     },
     {
-      title: "5 K-Hole",
+      title: "5  K-Hole",
       artist: "Ken Carson",
       audioUrl: "/Songs/5 K-Hole - Ken Carson.mp3",
     },
     {
-      title: "7 Trap Jump",
+      title: "7  Trap Jump",
       artist: "Ken Carson",
       audioUrl: "/Songs/6 Trap Jump - Ken Carson.mp3",
     },
     {
-      title: "8 Blakk Rokkstar",
+      title: "8  Blakk Rokkstar",
       artist: "Ken Carson",
       audioUrl: "/Songs/7 Blakk Rokkstar - Ken Carson.mp3",
     },
     {
-      title: "9 LiveLeak",
+      title: "9  LiveLeak",
       artist: "Ken Carson",
       audioUrl: "/Songs/8 LiveLeak - Ken Carson.mp3",
     },
@@ -663,7 +663,7 @@ const App = () => {
                     }`}
                     onClick={() => changeTrack(index, true)}
                   >
-                    {index === currentTrack && playing ? ( // Перевіряємо, чи трек активний і грає
+                    {index === currentTrack && playing ? ( // Еквалайзер тільки для активного треку, який грає
                       <span className="equalizer">
                         <span className="bar"></span>
                         <span className="bar"></span>

@@ -126,14 +126,23 @@
   font-weight: bold;
   margin-right: 5px;
   color: #999;
+  display: inline-block; /* Забезпечує резервування місця */
+  width: 20px; /* Фіксована ширина для вирівнювання */
+  text-align: left; /* Вирівнювання чисел праворуч */
 }
-
 .equalizer {
   display: inline-flex;
   align-items: end;
   gap: 2px;
-  margin-right: 5px;
+  margin-right: 3px;
+  padding-left: 3px;
   height: 12px;
+  width: 20px; /* Фіксована ширина для резервування місця */
+  visibility: hidden; /* Ховаємо еквалайзер за замовчуванням */
+}
+
+.track.active .equalizer {
+  visibility: visible; /* Робимо еквалайзер видимим для активного треку */
 }
 
 .equalizer .bar {
