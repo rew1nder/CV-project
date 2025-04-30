@@ -62,112 +62,112 @@ const App = () => {
 
   const tracks = [
     {
-      title: "Lord Of Chaos",
+      title: "1 Lord Of Chaos",
       artist: "Ken Carson",
       audioUrl: "/Songs/1 Lord Of Chaos - Ken Carson.mp3",
     },
     {
-      title: "Xposed",
+      title: "2 Xposed",
       artist: "Ken Carson",
       audioUrl: "/Songs/2 Xposed - Ken Carson.mp3",
     },
     {
-      title: "Money Spread",
+      title: "3 Money Spread",
       artist: "Ken Carson",
       audioUrl: "/Songs/3 Money Spread - Ken Carson.mp3",
     },
     {
-      title: "Root Of All Evil",
+      title: "4 Root Of All Evil",
       artist: "Ken Carson",
       audioUrl: "/Songs/4 Root Of All Evil - Ken Carson.mp3",
     },
     {
-      title: "K-Hole",
+      title: "5 K-Hole",
       artist: "Ken Carson",
       audioUrl: "/Songs/5 K-Hole - Ken Carson.mp3",
     },
     {
-      title: "Trap Jump",
+      title: "7 Trap Jump",
       artist: "Ken Carson",
       audioUrl: "/Songs/6 Trap Jump - Ken Carson.mp3",
     },
     {
-      title: "Blakk Rokkstar",
+      title: "8 Blakk Rokkstar",
       artist: "Ken Carson",
       audioUrl: "/Songs/7 Blakk Rokkstar - Ken Carson.mp3",
     },
     {
-      title: "LiveLeak",
+      title: "9 LiveLeak",
       artist: "Ken Carson",
       audioUrl: "/Songs/8 LiveLeak - Ken Carson.mp3",
     },
     {
-      title: "Diamonds",
+      title: "10 Diamonds",
       artist: "Ken Carson",
       audioUrl: "/Songs/9 Diamonds - Ken Carson.mp3",
     },
     {
-      title: "Dismantled",
+      title: "11 Dismantled",
       artist: "Ken Carson",
       audioUrl: "/Songs/10 Dismantled - Ken Carson.mp3",
     },
     {
-      title: "200 Kash",
+      title: "12 200 Kash",
       artist: "Ken Carson",
       audioUrl: "/Songs/11 200 Kash - Ken Carson.mp3",
     },
     {
-      title: "Down2Earth",
+      title: "13 Down2Earth",
       artist: "Ken Carson",
       audioUrl: "/Songs/12 Down2Earth - Ken Carson.mp3",
     },
     {
-      title: "Confetti",
+      title: "14 Confetti",
       artist: "Ken Carson",
       audioUrl: "/Songs/13 Confetti - Ken Carson.mp3",
     },
     {
-      title: "Naked",
+      title: "15 Naked",
       artist: "Ken Carson",
       audioUrl: "/Songs/14 Naked - Ken Carson.mp3",
     },
     {
-      title: "Kryptonite",
+      title: "16 Kryptonite",
       artist: "Ken Carson",
       audioUrl: "/Songs/15 Kryptonite - Ken Carson.mp3",
     },
     {
-      title: "Psycho",
+      title: "17 Psycho",
       artist: "Ken Carson",
       audioUrl: "/Songs/16 Psycho - Ken Carson.mp3",
     },
     {
-      title: "Inferno",
+      title: "18 Inferno",
       artist: "Ken Carson",
       audioUrl: "/Songs/17 Inferno - Ken Carson.mp3",
     },
     {
-      title: "Thx",
+      title: "19 Thx",
       artist: "Ken Carson",
       audioUrl: "/Songs/18 Thx - Ken Carson.mp3",
     },
     {
-      title: "2000",
+      title: "20 2000",
       artist: "Ken Carson",
       audioUrl: "/Songs/19 2000 - Ken Carson.mp3",
     },
     {
-      title: "Evolution",
+      title: "21 Evolution",
       artist: "Ken Carson",
       audioUrl: "/Songs/20 Evolution - Ken Carson.mp3",
     },
     {
-      title: "Ghoul",
+      title: "22 Ghoul",
       artist: "Ken Carson",
       audioUrl: "/Songs/21 Ghoul - Ken Carson.mp3",
     },
     {
-      title: "Off The Meter",
+      title: "23 Off The Meter (with Playboi Carti & Destroy Lonely)",
       artist: "Ken Carson",
       audioUrl: "/Songs/22 Ken Carson - Off The Meter.mp3",
     },
@@ -648,18 +648,35 @@ const App = () => {
                 <p className="album-release">Released April 11, 2025</p>
               </div>
             </div>
-
             <div className="tracks">
-              {tracks.map((track, index) => (
-                <div
-                  key={index}
-                  ref={(el) => (trackRefs.current[index] = el)}
-                  className={`track ${index === currentTrack ? "active" : ""}`}
-                  onClick={() => changeTrack(index, true)} // Передаємо true для ручного вибору
-                >
-                  {track.title}
-                </div>
-              ))}
+              {tracks.map((track, index) => {
+                const numberMatch = track.title.match(/^(\d+)/);
+                const number = numberMatch ? numberMatch[1] : "";
+                const titleWithoutNumber = track.title.replace(/^(\d+\s*)/, "");
+
+                return (
+                  <div
+                    key={index}
+                    ref={(el) => (trackRefs.current[index] = el)}
+                    className={`track ${
+                      index === currentTrack ? "active" : ""
+                    }`}
+                    onClick={() => changeTrack(index, true)}
+                  >
+                    {index === currentTrack && playing ? ( // Перевіряємо, чи трек активний і грає
+                      <span className="equalizer">
+                        <span className="bar"></span>
+                        <span className="bar"></span>
+                        <span className="bar"></span>
+                        <span className="bar"></span>
+                      </span>
+                    ) : (
+                      <span className="Number">{number}</span> // Показуємо номер треку, якщо не грає
+                    )}{" "}
+                    {titleWithoutNumber}
+                  </div>
+                );
+              })}
             </div>
 
             <div className="music-controls">
