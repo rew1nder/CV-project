@@ -1,67 +1,71 @@
 import Particles from "react-tsparticles";
-import { loadSlim } from "tsparticles-slim"; // loads tsparticles-slim
+import { loadSlim } from "tsparticles-slim";
 import { useCallback, useMemo } from "react";
+import { useMediaQuery } from "react-responsive";
 
-// tsParticles Repository: https://github.com/matteobruni/tsparticles
-// tsParticles Website: https://particles.js.org/
 const ParticlesComponent = (props) => {
-  // using useMemo is not mandatory, but it's recommended since this value can be memoized if static
+  const isMobile = useMediaQuery({ maxWidth: 768 });
+
   const options = useMemo(() => {
-    return {
+    const baseConfig = {
       background: {
-        color: "#000", // set background color (black for dark mode)
+        color: "#000",
       },
       fullScreen: {
-        enable: true, // this will make the canvas fill the entire screen
-        zIndex: -1, // this is the z-index value used when the fullScreen is enabled
+        enable: true,
+        zIndex: -1,
       },
       particles: {
         number: {
-          value: 100, // number of particles
-        },
-        links: {
-          enable: true, // enabling links between particles
-          distance: 150, // distance to link particles
-          color: "#333", // темніший колір ліній (темно-сірий для графу)
-          opacity: 0.7, // збільшена непрозорість ліній для кращої видимості
-          width: 2, // товщина ліній між частинками
+          value: isMobile ? 30 : 100, // Fewer particles on mobile
         },
         move: {
-          enable: true, // enabling particle movement
-          speed: { min: 1, max: 3 }, // random speed between min/max values
+          enable: true,
+          speed: { min: 1, max: 3 },
         },
         opacity: {
-          value: { min: 0.3, max: 0.7 }, // transparency value for the particles
+          value: { min: 0.3, max: 0.7 },
         },
         size: {
-          value: { min: 1, max: 5 }, // random size for particles
+          value: { min: 1, max: 5 },
         },
         color: {
-          value: "#ffffff", // set the color of the particles to white (or any other color)
+          value: "#ffffff",
         },
       },
-      interactivity: {
+    };
+
+    if (!isMobile) {
+      // Add links and interactivity for non-mobile devices
+      baseConfig.particles.links = {
+        enable: true,
+        distance: 150,
+        color: "#333",
+        opacity: 0.7,
+        width: 2,
+      };
+      baseConfig.interactivity = {
         events: {
           onHover: {
-            enable: true, // enables hover effect
-            mode: "repulse", // make particles run away from the cursor
+            enable: true,
+            mode: "repulse",
           },
         },
         modes: {
           repulse: {
-            distance: 100, // distance of the particles from the cursor
+            distance: 100,
           },
         },
-      },
-    };
-  }, []);
+      };
+    }
 
-  // useCallback is not mandatory, but it's recommended since this callback can be memoized if static
+    return baseConfig;
+  }, [isMobile]);
+
   const particlesInit = useCallback((engine) => {
     loadSlim(engine);
   }, []);
 
-  // setting an id can be useful for identifying the right particles component
   return <Particles id={props.id} init={particlesInit} options={options} />;
 };
 

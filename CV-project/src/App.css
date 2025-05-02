@@ -1,25 +1,32 @@
-/* Базові стилі */
+/* Base styles */
 body {
   margin: 0;
-  background-color: black;
+  background-color: #000;
   font-family: "Oswald", sans-serif;
-  color: white;
+  color: #fff;
 }
 
-/* Контейнер */
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Container */
 .container {
   position: relative;
   z-index: 1;
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
-  background-color: rgb(0, 0, 0);
+  min-height: 100vh;
+  background-color: #000;
+  padding: 20px 0;
 }
 
+/* Content */
 .content {
   display: flex;
-  justify-content: center; /* Замість space-between */
+  justify-content: space-between;
   align-items: stretch;
   flex-wrap: wrap;
   width: 90%;
@@ -28,62 +35,62 @@ body {
   margin: 0 auto;
 }
 
-/* Блок коду */
+/* Common block styles */
+.text-block,
+.code-block,
+.music-block {
+  background-color: rgba(8, 8, 8, 0.8);
+  border: 1px solid #272727;
+  border-radius: 15px;
+  padding: 16px;
+  opacity: 0.8;
+  transition: all 0.3s ease-in-out;
+  box-sizing: border-box;
+}
+
+.text-block:hover,
+.code-block:hover,
+.music-block:hover {
+  border-color: #fff;
+  box-shadow: 0 0 3px rgba(255, 255, 255, 0.6);
+  opacity: 1;
+}
+
+/* Text block */
+.text-block {
+  flex: 1 1 330px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 14px;
+  line-height: 1.5;
+  min-height: 320px;
+  max-height: 320px;
+}
+
+/* Code block */
 .code-block {
   flex: 1 1 330px;
-  padding: 16px;
-  background-color: rgba(8, 8, 8, 0.8);
-  color: #fff;
-  border: 1px solid rgb(39, 39, 39);
-  border-radius: 15px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
   font-family: "Courier New", Courier, monospace;
   font-size: 14px;
   line-height: 1.5;
   white-space: pre-wrap;
   word-break: break-word;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
   min-height: 320px;
   max-height: 320px;
-  opacity: 0.8;
 }
 
-/* Текстовий блок */
-.text-block {
-  position: relative;
-  flex: 1 1 330px;
-  background-color: rgba(8, 8, 8, 0.8);
-  text-align: center;
-  padding: 16px;
-  border: 1px solid rgb(39, 39, 39);
-  border-radius: 15px;
-  font-family: "Courier New", Courier, monospace;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  min-height: 320px;
-  max-height: 320px;
-  opacity: 0.8;
-}
-
-/* Ховер ефекти */
-.text-block:hover,
-.code-block:hover,
-.music-block:hover {
-  border: 1px solid #ffffff;
-  transition: all 0.3s ease-in-out;
-  box-shadow: 0 0 3px rgba(255, 255, 255, 0.6);
-  opacity: 1;
-}
-
-/* Кнопка */
+/* Toggle button */
 .toggle-button {
-  --active: #fff;
-  --border: rgba(255, 255, 255, 0.12);
   position: fixed;
-  bottom: 30px;
-  left: calc(50% + 40px);
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
   z-index: 9999;
   width: 50px;
   height: 50px;
@@ -94,7 +101,6 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  overflow: hidden;
 }
 
 .toggle-button:hover {
@@ -102,14 +108,12 @@ body {
 }
 
 .toggle-button i {
-  display: block;
   position: absolute;
   width: 20px;
   height: 20px;
   left: 50%;
   top: 50%;
   margin: -10px 0 0 -10px;
-  transform: scaleX(1);
   transition: transform 0.3s ease;
 }
 
@@ -120,15 +124,14 @@ body {
 .toggle-button i:before,
 .toggle-button i:after {
   content: "";
+  position: absolute;
   width: 10px;
   height: 2px;
   border-radius: 1px;
-  position: absolute;
   left: 50%;
   top: 50%;
-  background: var(--active);
+  background: #fff;
   margin: -1px 0 0 -5px;
-  display: block;
   transform-origin: 9px 50%;
 }
 
@@ -158,30 +161,18 @@ body {
   transform: rotate(360deg);
 }
 
-.toggle-button.left-position,
-.toggle-button.right-position {
-  left: unset;
-  right: unset;
-}
-
 /* Name, Email, Title */
 .erd-style {
   font-size: 40px;
   letter-spacing: 1px;
   margin: 0;
-  position: relative;
-  display: inline-block;
   color: #fff;
-  overflow: hidden;
 }
 
 .name a {
-  position: relative;
-  z-index: 2;
   color: #fff;
-  text-decoration: none;
   font-size: 40px;
-  transition: all 0.45s;
+  transition: color 0.45s;
 }
 
 .name:hover a {
@@ -203,29 +194,10 @@ body {
   width: 100%;
 }
 
-.name:not(:hover)::before {
-  width: 0;
-  left: 100%;
-  transition: width 0.6s ease, left 0.6s ease;
-}
-
-.email {
-  position: relative;
-  display: inline-block;
-  font-size: 15px;
-  color: #fff;
-  padding: 5px 0;
-  overflow: hidden;
-  margin: 6px 0;
-}
-
 .email a {
-  position: relative;
-  z-index: 2;
   color: #fff;
-  text-decoration: none;
   font-size: 18px;
-  transition: all 0.45s;
+  transition: color 0.45s;
 }
 
 .email:hover a {
@@ -247,27 +219,20 @@ body {
   width: 100%;
 }
 
-.email:not(:hover)::before {
-  width: 0;
-  left: 100%;
-  transition: width 0.6s ease, left 0.6s ease;
-}
-
 .title {
   margin: 4px 0;
   font-size: 16px;
   font-weight: 500;
-  color: #ffffff;
+  color: #fff;
 }
 
-/* Іконки */
+/* Icons */
 .icons {
   padding-top: 10px;
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
   gap: 10px;
-  opacity: 0;
   animation: fadeIn 2s forwards;
 }
 
@@ -282,73 +247,346 @@ body {
   transform: scale(1.2);
 }
 
-/* Адаптивність */
-@media (max-width: 768px) {
-  .code-block {
-    width: 90%;
-    min-width: unset;
-    min-height: 230px; /* Висота для код-блоку */
-    max-height: 230px; /* Висота для код-блоку */
-    font-size: 12px; /* Зменшений шрифт */
-    line-height: 1.4; /* Зменшена висота рядка */
-    text-align: left; /* Вирівнюємо текст по лівому краю */
-    word-wrap: break-word; /* Переносимо довгі слова */
-    overflow: hidden; /* Прибираємо прокрутку */
-  }
-
-  .text-block {
-    width: 90%;
-    min-width: unset;
-    min-height: 230px; /* Висота для текст-блоку */
-    max-height: 230px; /* Висота для текст-блоку */
-    font-size: 12px; /* Зменшений шрифт */
-    line-height: 1.4; /* Зменшена висота рядка */
-    text-align: center; /* Вирівнюємо текст по центру */
-    word-wrap: break-word; /* Переносимо довгі слова */
-    overflow: hidden; /* Прибираємо прокрутку */
-  }
-
-  /* .toggle-button {
-    left: calc(50% + 40px); /* Центруємо по горизонталі *
-  } */
-  .toggle-button {
-    /* position: static; Переміщуємо кнопку в потік документа */
-    margin: 20px auto 0; /* Центруємо кнопку під блоками */
-    /* display: block; Забезпечуємо вирівнювання */
-  }
-  .content {
-    flex-direction: column;
-    align-items: center;
-    gap: 20px;
-    padding-bottom: 100px; /* Додаємо відступ знизу, щоб кнопка не перекривала блоки */
-  }
-
-  .icons {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 6px;
-    justify-items: center;
-  }
-
-  .icons img {
-    width: 30px; /* Зменшений розмір ширини */
-    height: 30px; /* Зменшений розмір висоти */
-  }
-}
-/* Анімації */
-.rotate-react {
-  animation: rotate 10s linear infinite;
+/* Music block */
+.music-block {
+  background-color: rgba(8, 8, 8, 0.8);
+  margin: 40px auto;
+  padding: 25px;
+  border: 1px solid #272727;
+  border-radius: 15px;
+  font-family: "Courier New", Courier, monospace;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 500px;
+  max-height: 550px;
+  min-width: 420px;
+  max-width: 460px;
+  position: relative;
+  opacity: 0.9;
 }
 
-@keyframes rotate {
-  0% {
-    transform: rotate(0deg);
-  }
+.album-info {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 15px;
+  margin-bottom: 5px;
+}
+
+.album-cover {
+  width: 85px;
+  height: 85px;
+  border-radius: 10px;
+}
+
+.album-meta {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.album-title,
+.album-artist {
+  color: #fff;
+  font-size: 1.3rem;
+  margin: 0;
+  text-align: left;
+  font-weight: bold;
+}
+
+.album-artist {
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 5px 0 2px;
+}
+
+.release-date {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-style: italic;
+  margin: 0;
+}
+
+.tracks {
+  flex-grow: 1;
+  overflow-y: auto;
+  max-height: calc(100% - 150px);
+  padding-right: 5px;
+  margin-bottom: 10px;
+}
+
+.tracks::-webkit-scrollbar {
+  width: 6px;
+}
+
+.tracks::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+}
+
+.track {
+  color: #fff;
+  cursor: pointer;
+  padding: 5px 0;
+  font-size: 1rem;
+  transition: color 0.3s, background-color 0.3s;
+}
+
+.track:hover {
+  color: #ff6b6b;
+}
+
+.track.active {
+  color: #ff6b6b;
+  font-weight: bold;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 5px;
+}
+
+.music-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-top: auto;
+}
+
+.track-controls {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.track-controls svg {
+  font-size: 1.6rem;
+  color: #fff;
+  cursor: pointer;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.track-controls svg:hover {
+  color: #ff6b6b;
+  transform: scale(1.1);
+}
+
+.Number {
+  font-weight: bold;
+  margin-right: 5px;
+  color: #999;
+  display: inline-block;
+  width: 20px;
+  text-align: left;
+}
+
+.equalizer {
+  display: inline-flex;
+  align-items: end;
+  gap: 2px;
+  margin-right: 3px;
+  padding-left: 3px;
+  height: 12px;
+  width: 20px;
+  visibility: hidden;
+}
+
+.track.active .equalizer {
+  visibility: visible;
+}
+
+.equalizer .bar {
+  width: 2px;
+  background: limegreen;
+  animation: bounce 0.6s infinite ease-in-out;
+}
+
+.equalizer .bar:nth-child(1) {
+  animation-delay: 0s;
+}
+.equalizer .bar:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.equalizer .bar:nth-child(3) {
+  animation-delay: 0.3s;
+}
+.equalizer .bar:nth-child(4) {
+  animation-delay: 0.45s;
+}
+
+@keyframes bounce {
+  0%,
   100% {
-    transform: rotate(360deg);
+    height: 3px;
+  }
+  50% {
+    height: 12px;
   }
 }
 
+.play-button {
+  font-size: 1.6rem;
+  color: #fff;
+  cursor: pointer;
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.play-button:hover {
+  color: #ff6b6b;
+  transform: scale(1.1);
+}
+
+.audio-controls {
+  display: flex;
+  gap: 25px;
+  justify-content: center;
+  align-items: center;
+}
+
+.volume-control,
+.speed-control {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  font-size: 14px;
+  color: #fff;
+}
+
+.volume-control label,
+.speed-control label {
+  margin-bottom: 5px;
+  font-weight: bold;
+  font-size: 13px;
+}
+
+.volume-control input[type="range"],
+.speed-control input[type="range"] {
+  width: 150px;
+  appearance: none;
+  height: 6px;
+  background: #444;
+  border-radius: 4px;
+  outline: none;
+}
+
+.volume-control input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #ff6b6b;
+  cursor: pointer;
+}
+
+.speed-control input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #00f7ff;
+  cursor: pointer;
+}
+
+.volume-value,
+.speed-value {
+  font-size: 12px;
+  color: #aaa;
+}
+
+.progress-container {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-top: 10px;
+  width: 100%;
+}
+
+.current-time,
+.total-time {
+  font-size: 14px;
+  color: #fff;
+  min-width: 50px;
+  text-align: center;
+}
+
+.progress-bar-wrapper {
+  position: relative;
+  flex: 1;
+  height: 8px;
+  background: #444;
+  border-radius: 4px;
+}
+
+.progress-bar-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background-color: #fff;
+  width: 0%;
+  border-radius: 4px;
+  transition: width 0.1s linear;
+}
+
+.progress-bar {
+  position: relative;
+  width: 100%;
+  height: 8px;
+  background: transparent;
+  appearance: none;
+  outline: none;
+  cursor: pointer;
+}
+
+.progress-bar::-webkit-slider-thumb {
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #ff6b6b;
+  top: -4px;
+  position: relative;
+  cursor: pointer;
+}
+
+.progress-bar::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #ff6b6b;
+  border: none;
+  cursor: pointer;
+}
+
+.shuffle-button,
+.repeat-button {
+  font-size: 1.6rem;
+  color: #fff;
+  cursor: pointer;
+  transition: transform 0.2s ease, color 0.2s ease;
+  background: none;
+  border: none;
+}
+
+.shuffle-button:hover,
+.repeat-button:hover {
+  color: #ff6b6b;
+  transform: scale(1.1);
+}
+
+.shuffle-button.active::after,
+.repeat-button.active::after {
+  content: "";
+  position: absolute;
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 50%;
+  height: 2px;
+  background-color: #ff6b6b;
+  border-radius: 2px;
+}
+
+/* Animations */
 @keyframes fadeIn {
   to {
     opacity: 1;
@@ -366,13 +604,33 @@ body {
   }
 }
 
-a {
-  color: inherit;
-  text-decoration: none;
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
 }
 
 .fade-in {
   animation: fadeInText 1s ease-out forwards;
+}
+
+.rotate-react {
+  animation: rotate 10s linear infinite;
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* Particles */
@@ -381,4 +639,168 @@ a {
   width: 100%;
   height: 100%;
   z-index: -1;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  body {
+    overflow: hidden;
+  }
+
+  .container {
+    padding: 10px 0 70px;
+    min-height: 100vh;
+    box-sizing: border-box;
+  }
+
+  .content {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    justify-content: flex-start;
+    width: 95%;
+  }
+
+  .text-block,
+  .code-block {
+    flex: 1 1 100%;
+    width: 100%;
+    min-height: calc((100vh - 140px) / 2);
+    max-height: calc((100vh - 140px) / 2);
+    font-size: 12px;
+    line-height: 1.4;
+    overflow: hidden;
+    box-sizing: border-box;
+  }
+
+  .music-block {
+    width: 100%;
+    min-width: unset;
+    max-width: 95%;
+    min-height: calc(100vh - 140px);
+    max-height: calc(100vh - 140px);
+    margin: 10px auto;
+    padding: 15px;
+    box-sizing: border-box;
+  }
+
+  .tracks {
+    max-height: calc(100% - 120px);
+  }
+
+  .album-cover {
+    width: 80px;
+    height: 80px;
+  }
+
+  .album-title {
+    font-size: 1.2rem;
+  }
+
+  .album-artist {
+    font-size: 1rem;
+  }
+
+  .audio-controls {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .volume-control,
+  .speed-control {
+    align-items: center;
+    margin-left: 0;
+  }
+
+  .volume-control input[type="range"],
+  .speed-control input[type="range"] {
+    width: 260px;
+  }
+
+  .volume-control input[type="range"]::-webkit-slider-thumb,
+  .speed-control input[type="range"]::-webkit-slider-thumb {
+    width: 20px;
+    height: 20px;
+  }
+
+  .volume-control input[type="range"]::-moz-range-thumb,
+  .speed-control input[type="range"]::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+  }
+
+  .track-controls {
+    flex-wrap: wrap;
+    gap: 15px;
+  }
+
+  .progress-container {
+    flex-direction: row;
+    align-items: center;
+    gap: 15px;
+    width: 100%;
+    padding: 0 8px;
+  }
+
+  .progress-bar-wrapper {
+    width: 100%;
+    height: 8px;
+    position: relative;
+  }
+
+  .progress-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+  }
+
+  .progress-bar {
+    width: 100%;
+    height: 8px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    appearance: none;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .progress-bar::-webkit-slider-thumb {
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #ff6b6b;
+    top: -2px;
+    position: relative;
+  }
+
+  .progress-bar::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #ff6b6b;
+    border: none;
+  }
+
+  .current-time,
+  .total-time {
+    min-width: 50px;
+    font-size: 14px;
+  }
+
+  .icons {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+    justify-items: center;
+  }
+
+  .icons img {
+    width: 30px;
+    height: 30px;
+  }
+
+  .toggle-button {
+    bottom: 10px;
+  }
 }

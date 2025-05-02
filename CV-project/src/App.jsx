@@ -48,6 +48,7 @@ const App = () => {
   const [duration, setDuration] = useState(0);
   const [isShuffle, setIsShuffle] = useState(false);
   const [isRepeat, setIsRepeat] = useState(false);
+  const [isLoadingTrack, setIsLoadingTrack] = useState(false);
 
   const audioContextRef = useRef(null);
   const sourceNodeRef = useRef(null);
@@ -173,26 +174,22 @@ const App = () => {
     },
   ];
 
-  // Initialize AudioContext and preload all tracks
+  // Initialize AudioContext and preload first few tracks
   useEffect(() => {
     audioContextRef.current = new (window.AudioContext ||
       window.webkitAudioContext)();
     gainNodeRef.current = audioContextRef.current.createGain();
     gainNodeRef.current.connect(audioContextRef.current.destination);
 
-    // Preload all tracks
-    const preloadTracks = async () => {
-      console.log("Starting preload of all tracks...");
-      const startTime = performance.now();
-      for (let i = 0; i < tracks.length; i++) {
+    // Preload first 3 tracks
+    const preloadInitialTracks = async () => {
+      for (let i = 0; i < Math.min(3, tracks.length); i++) {
         if (!audioBuffersRef.current[i]) {
           await loadTrack(i);
         }
       }
-      const endTime = performance.now();
-      console.log(`All tracks preloaded in ${endTime - startTime} ms`);
     };
-    preloadTracks();
+    preloadInitialTracks();
 
     return () => {
       if (audioContextRef.current) {
@@ -211,10 +208,6 @@ const App = () => {
   useEffect(() => {
     if (audioBuffersRef.current[currentTrack]) {
       setDuration(audioBuffersRef.current[currentTrack].duration);
-      console.log(
-        "Duration set for current track:",
-        audioBuffersRef.current[currentTrack].duration
-      );
     }
   }, [currentTrack]);
 
@@ -242,11 +235,6 @@ const App = () => {
   const updateProgress = () => {
     if (!playing || !audioContextRef.current || !sourceNodeRef.current) {
       cancelAnimationFrame(animationFrameRef.current);
-      console.log("Progress update stopped:", {
-        playing,
-        audioContext: !!audioContextRef.current,
-        sourceNode: !!sourceNodeRef.current,
-      });
       return;
     }
     const currentTime =
@@ -256,12 +244,6 @@ const App = () => {
     if (now - lastUpdateRef.current >= 50) {
       setProgress(clampedTime);
       lastUpdateRef.current = now;
-      console.log("Progress updated:", {
-        currentTime,
-        clampedTime,
-        duration,
-        delta: currentTime - clampedTime,
-      });
     }
     if (clampedTime < (duration || Infinity)) {
       animationFrameRef.current = requestAnimationFrame(updateProgress);
@@ -275,10 +257,6 @@ const App = () => {
   // Create and configure audio source node
   const createSourceNode = (startTime = 0) => {
     if (!audioBuffersRef.current[currentTrack] || !audioContextRef.current) {
-      console.log("Cannot create source node:", {
-        buffer: !!audioBuffersRef.current[currentTrack],
-        audioContext: !!audioContextRef.current,
-      });
       return;
     }
 
@@ -310,7 +288,7 @@ const App = () => {
         createSourceNode(0);
         setPlaying(true);
       } else {
-        changeTrack(currentTrack + 1, false); // Автоматичний перехід
+        changeTrack(currentTrack + 1, false);
       }
     };
 
@@ -320,9 +298,9 @@ const App = () => {
   };
 
   // Handle track change
-  const changeTrack = (index, isManualSelection = false) => {
+  const changeTrack = async (index, isManualSelection = false) => {
     if (isManualSelection) {
-      setIsShuffle(false); // Вимикаємо Shuffle при ручному виборі
+      setIsShuffle(false);
     }
 
     let newIndex = index;
@@ -337,35 +315,53 @@ const App = () => {
       }
     }
 
+    setIsLoadingTrack(true);
     setCurrentTrack(newIndex);
     setProgress(0);
     pauseTimeRef.current = 0;
+
+    if (!audioBuffersRef.current[newIndex]) {
+      await loadTrack(newIndex);
+    }
+
+    setIsLoadingTrack(false);
     if (!playing) setPlaying(true);
   };
-  // Handle track change
+
+  // Handle track change and preload nearby tracks
   useEffect(() => {
     const loadAndPlay = async () => {
       if (!audioBuffersRef.current[currentTrack]) {
-        console.log(`Track ${currentTrack} not in cache, loading...`);
+        setIsLoadingTrack(true);
         await loadTrack(currentTrack);
+        setIsLoadingTrack(false);
       }
       setProgress(0);
       pauseTimeRef.current = 0;
       if (playing) {
         createSourceNode();
       }
+
+      // Preload next and previous tracks
+      const preloadNearbyTracks = async () => {
+        const indicesToPreload = [
+          (currentTrack + 1) % tracks.length,
+          currentTrack - 1 >= 0 ? currentTrack - 1 : tracks.length - 1,
+        ];
+        for (const index of indicesToPreload) {
+          if (!audioBuffersRef.current[index]) {
+            await loadTrack(index);
+          }
+        }
+      };
+      preloadNearbyTracks();
     };
     loadAndPlay();
   }, [currentTrack]);
 
   // Load track function
   const loadTrack = async (trackIndex) => {
-    const startTime = performance.now();
     if (audioBuffersRef.current[trackIndex]) {
-      console.log(
-        `Track ${trackIndex} already in cache, duration:`,
-        audioBuffersRef.current[trackIndex].duration
-      );
       return;
     }
     try {
@@ -380,19 +376,14 @@ const App = () => {
       if (trackIndex === currentTrack) {
         setDuration(audioBuffer.duration);
       }
-      const endTime = performance.now();
-      console.log(
-        `Track ${trackIndex} loaded in ${endTime - startTime} ms, duration:`,
-        audioBuffer.duration
-      );
     } catch (err) {
-      console.error(`Error loading track ${trackIndex}:`, err);
+      // Handle error silently
     }
   };
 
   // Handle play/pause
   const togglePlay = () => {
-    if (!audioBuffersRef.current[currentTrack]) return;
+    if (!audioBuffersRef.current[currentTrack] || isLoadingTrack) return;
 
     if (!playing) {
       if (audioContextRef.current.state === "suspended") {
@@ -649,34 +640,41 @@ const App = () => {
               </div>
             </div>
             <div className="tracks">
-              {tracks.map((track, index) => {
-                const numberMatch = track.title.match(/^(\d+)/);
-                const number = numberMatch ? numberMatch[1] : "";
-                const titleWithoutNumber = track.title.replace(/^(\d+\s*)/, "");
+              {isLoadingTrack ? (
+                <div>Loading track...</div>
+              ) : (
+                tracks.map((track, index) => {
+                  const numberMatch = track.title.match(/^(\d+)/);
+                  const number = numberMatch ? numberMatch[1] : "";
+                  const titleWithoutNumber = track.title.replace(
+                    /^(\d+\s*)/,
+                    ""
+                  );
 
-                return (
-                  <div
-                    key={index}
-                    ref={(el) => (trackRefs.current[index] = el)}
-                    className={`track ${
-                      index === currentTrack ? "active" : ""
-                    }`}
-                    onClick={() => changeTrack(index, true)}
-                  >
-                    {index === currentTrack && playing ? ( // Еквалайзер тільки для активного треку, який грає
-                      <span className="equalizer">
-                        <span className="bar"></span>
-                        <span className="bar"></span>
-                        <span className="bar"></span>
-                        <span className="bar"></span>
-                      </span>
-                    ) : (
-                      <span className="Number">{number}</span> // Показуємо номер треку, якщо не грає
-                    )}{" "}
-                    {titleWithoutNumber}
-                  </div>
-                );
-              })}
+                  return (
+                    <div
+                      key={index}
+                      ref={(el) => (trackRefs.current[index] = el)}
+                      className={`track ${
+                        index === currentTrack ? "active" : ""
+                      }`}
+                      onClick={() => changeTrack(index, true)}
+                    >
+                      {index === currentTrack && playing ? (
+                        <span className="equalizer">
+                          <span className="bar"></span>
+                          <span className="bar"></span>
+                          <span className="bar"></span>
+                          <span className="bar"></span>
+                        </span>
+                      ) : (
+                        <span className="Number">{number}</span>
+                      )}{" "}
+                      {titleWithoutNumber}
+                    </div>
+                  );
+                })
+              )}
             </div>
 
             <div className="music-controls">
