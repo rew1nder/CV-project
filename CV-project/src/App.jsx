@@ -1,6 +1,5 @@
 import { useEffect, useState, useRef } from "react";
 import "./App.css";
-import "./MusicBlock.css";
 import ParticlesComponent from "./components/Particles";
 import {
   FaArrowRight,
