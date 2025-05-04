@@ -454,7 +454,7 @@ const App = () => {
         inline: "start",
       });
     }
-  }, [currentTrack]);
+  }, [currentTrack, isLoadingTrack]);
 
   // Code typing animation
   useEffect(() => {
@@ -639,16 +639,26 @@ const App = () => {
               </div>
             </div>
             <div className="tracks">
-              {isLoadingTrack ? (
-                <div>Loading track...</div>
-              ) : (
-                tracks.map((track, index) => {
+              <div className="tracks-wrapper">
+                {tracks.map((track, index) => {
                   const numberMatch = track.title.match(/^(\d+)/);
                   const number = numberMatch ? numberMatch[1] : "";
                   const titleWithoutNumber = track.title.replace(
                     /^(\d+\s*)/,
                     ""
                   );
+
+                  if (isLoadingTrack && index === currentTrack) {
+                    return (
+                      <div
+                        key={index}
+                        ref={(el) => (trackRefs.current[index] = el)}
+                        className="track active loading-track"
+                      >
+                        <span className="Number">{number}</span> Loading...
+                      </div>
+                    );
+                  }
 
                   return (
                     <div
@@ -672,8 +682,8 @@ const App = () => {
                       {titleWithoutNumber}
                     </div>
                   );
-                })
-              )}
+                })}
+              </div>
             </div>
 
             <div className="music-controls">

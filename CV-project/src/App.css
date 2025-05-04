@@ -4,6 +4,7 @@ body {
   background-color: #000;
   font-family: "Oswald", sans-serif;
   color: #fff;
+  overflow: hidden;
 }
 
 a {
@@ -311,9 +312,15 @@ a {
 .tracks {
   flex-grow: 1;
   overflow-y: auto;
-  max-height: calc(100% - 150px);
+  max-height: 300px;
   padding-right: 5px;
   margin-bottom: 10px;
+}
+
+.tracks-wrapper {
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
 }
 
 .tracks::-webkit-scrollbar {
@@ -342,6 +349,12 @@ a {
   font-weight: bold;
   background-color: rgba(255, 255, 255, 0.05);
   border-radius: 5px;
+}
+
+.loading-track {
+  color: #999;
+  font-size: 1rem;
+  padding: 5px 0;
 }
 
 .music-controls {
@@ -565,6 +578,7 @@ a {
   transition: transform 0.2s ease, color 0.2s ease;
   background: none;
   border: none;
+  position: relative;
 }
 
 .shuffle-button:hover,
@@ -577,10 +591,10 @@ a {
 .repeat-button.active::after {
   content: "";
   position: absolute;
-  bottom: -4px;
+  bottom: -2px;
   left: 50%;
   transform: translateX(-50%);
-  width: 50%;
+  width: 80%;
   height: 2px;
   background-color: #ff6b6b;
   border-radius: 2px;
